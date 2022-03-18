@@ -25,9 +25,6 @@ try:
     with open("text.txt", 'r+') as file:  # Открываем файл
         print("\n-----Результат работы программы-----\n")
         buffer = file.read(buffer_len)  # Читаем первый блок
-        if not buffer:  # Если файл пустой
-            print("\nФайл text.txt в директории проекта пустой."
-                  "\nДобавьте не пустой файл в директорию или переименуйте существующий *.txt файл.")
         while buffer:  # Пока файл не пустой
             if (buffer >= '0') and (buffer <= '9'):  # Обрабатываем текущий блок
                 digit_flag = True
