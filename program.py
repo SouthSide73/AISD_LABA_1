@@ -37,6 +37,8 @@ try:
                             n = int(work_buffer)
                             s = ''
                             h = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                            if n == 0:
+                                s = '0'
                             while n > 0:
                                 s = h[n % k] + s
                                 n = n // k
