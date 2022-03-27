@@ -6,34 +6,39 @@
 Вывод результата работы программы осуществляется на экран.
 """
 import time
-max_buffer_len = 100    # Максимальный размер рабочего буфера
-buffer_len = 1          # Размер буфера чтения
+import re
+buffer_len = 1                  # Размер буфера чтения
 work_buffer = ""                # Рабочий буфер
 digit_flag = False              # Флаг наличия цифры
+stop_flag = False               # Флаг пустого буфера
 try:
     print("----- Локальное время", time.ctime(), "-----")
     while 1:
-        k = int(input('Введите число k:'))
+        k = int(input('Введите число k:'))  # Ввод значения переменной с клавиатуры
         if (k > 1) and (k <= 36):
             break
-        else:
+        else:   # Если число выходит за промежутки
             print('Программа не может переводить числа в такую систему счисления, '
                   'либо такой системы счисления не существует.')
     start = time.time()
-    with open("text.txt", 'a') as file:   # Открываем файл
-        file.write('\n')
-    with open("text.txt", 'r+') as file:  # Открываем файл
+    with open("text.txt", 'r+') as file:   # Открываем файл
         print("\n-----Результат работы программы-----\n")
         buffer = file.read(buffer_len)  # Читаем первый блок
+        if not buffer:  # Если файл пустой
+            print("\nФайл text.txt в директории проекта пустой."
+                  "\nДобавьте не пустой файл в директорию или переименуйте существующий *.txt файл.")
         while buffer:  # Пока файл не пустой
             if (buffer >= '0') and (buffer <= '9'):  # Обрабатываем текущий блок
-                digit_flag = True
                 work_buffer += buffer
-            if buffer.find(".") >= 0 or buffer.find(",") >= 0 or \
-                    buffer.find(" ") >= 0 or buffer.find("\n") >= 0:  # Если символ - окончание числа
+                digit_flag = True
+            if re.findall(r'[а-яё]*[А-ЯЁ]|[a-z]*[A-Z]', buffer) and digit_flag:  # Если буквенные символы между цифрами
+                print("\nВ файле числа должны быть представлены в десятичной системе счисления."
+                      "\nМежду цифрами в числах присутсвуют другие символы. Измените существующий text.txt файл.")
+                break
+            if re.findall(r'[\W]', buffer):    # Если символ - окончание числа
                 if digit_flag:  # Если в буфере сформировалось число
                     if len(work_buffer) % 2 != 0:
-                        for i in range(0, len(work_buffer)):
+                        for i in range(0, len(work_buffer)):  # Цикл перевода числа в К-ичную систему счисления
                             n = int(work_buffer)
                             s = ''
                             h = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -43,12 +48,17 @@ try:
                                 s = h[n % k] + s
                                 n = n // k
                         print(int(work_buffer), '=', s)  # Печатаем предложение и готовим новый цикл
+                        if stop_flag:  # Остановка программы, если дошли до конца файла
+                            break
                 digit_flag = False
                 work_buffer = ''
             buffer = file.read(buffer_len)  # Читаем очередной блок
+            if (not buffer) and (len(work_buffer) % 2 != 0):   # Если дошли до конца файла
+                buffer = " "
+                stop_flag = True
         finish = time.time()
         result = finish - start
-        print("Program time: " + str(result) + " seconds.")
-except FileNotFoundError:
+        print("Program time: " + str(result) + " seconds.")  # Вывод времени программы
+except FileNotFoundError:     # Если файл отсуствует в директории
     print("\nФайл text.txt в директории проекта не обнаружен."
           "\nДобавьте файл в директорию или переименуйте существующий *.txt файл.")
