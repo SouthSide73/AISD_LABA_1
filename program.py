@@ -10,7 +10,7 @@ buffer_len = 1                  # Размер буфера чтения
 work_buffer = ""                # Рабочий буфер
 digit_flag = False              # Флаг наличия цифры
 stop_flag = False               # Флаг пустого буфера
-symbol_flag = False
+symbol_flag = False             # Флаг слитного написания буквенных символов с числом
 try:
     print("----- Локальное время", time.ctime(), "-----")
     while 1:
@@ -29,7 +29,7 @@ try:
             print("\nФайл text.txt в директории проекта пустой."
                   "\nДобавьте не пустой файл в директорию или переименуйте существующий *.txt файл.")
         while buffer:  # Пока файл не пустой
-            if re.findall(r'[а-яё]|[А-ЯЁ]|[a-z]|[A-Z]', buffer):
+            if re.findall(r'[а-яё]|[А-ЯЁ]|[a-z]|[A-Z]', buffer):  # Проверка буфера на наличие буквы
                 symbol_flag = True
             if (buffer >= '0') and (buffer <= '9'):  # Обрабатываем текущий блок
                 work_buffer += buffer
@@ -56,7 +56,7 @@ try:
                 digit_flag = False
                 work_buffer = ''
             buffer = file.read(buffer_len)  # Читаем очередной блок
-            if re.findall(r'[\d]', buffer) and symbol_flag:
+            if re.findall(r'[\d]', buffer) and symbol_flag:  # Если буквенные символы пишутся слитно с числом
                 print("\nВ файле слитно с числом пишутся буквенные символы."
                       "\nИзмените существующий text.txt файл.")
                 break
