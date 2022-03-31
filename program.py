@@ -10,6 +10,7 @@ buffer_len = 1                  # Размер буфера чтения
 work_buffer = ""                # Рабочий буфер
 digit_flag = False              # Флаг наличия цифры
 stop_flag = False               # Флаг пустого буфера
+symbol_flag = False
 try:
     print("----- Локальное время", time.ctime(), "-----")
     while 1:
@@ -28,10 +29,12 @@ try:
             print("\nФайл text.txt в директории проекта пустой."
                   "\nДобавьте не пустой файл в директорию или переименуйте существующий *.txt файл.")
         while buffer:  # Пока файл не пустой
+            if re.findall(r'[а-яё]|[А-ЯЁ]|[a-z]|[A-Z]', buffer):
+                symbol_flag = True
             if (buffer >= '0') and (buffer <= '9'):  # Обрабатываем текущий блок
                 work_buffer += buffer
                 digit_flag = True
-            if re.findall(r'[а-яё]*[А-ЯЁ]|[a-z]*[A-Z]', buffer) and digit_flag:  # Если буквенные символы между цифрами
+            if re.findall(r'[а-яё]|[А-ЯЁ]|[a-z]|[A-Z]', buffer) and digit_flag:  # Если буквенные символы между цифрами
                 print("\nВ файле числа должны быть представлены в десятичной системе счисления."
                       "\nМежду цифрами в числах присутствуют другие символы. Измените существующий text.txt файл.")
                 break
@@ -53,6 +56,11 @@ try:
                 digit_flag = False
                 work_buffer = ''
             buffer = file.read(buffer_len)  # Читаем очередной блок
+            if re.findall(r'[\d]', buffer) and symbol_flag:
+                print('xui')
+                break
+            else:
+                symbol_flag = False
             if (not buffer) and (len(work_buffer) % 2 != 0):   # Если дошли до конца файла
                 buffer = " "
                 stop_flag = True
