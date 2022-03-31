@@ -22,7 +22,7 @@ try:
                   'либо такой системы счисления не существует.'
                   '\nВведите число в десятичной системе счисления от 1 до 36')
     start = time.time()
-    with open("text.txt", 'r+') as file:   # Открываем файл
+    with open("text.txt", 'r+', encoding='utf-8') as file:   # Открываем файл
         print("\n-----Результат работы программы-----\n")
         buffer = file.read(buffer_len)  # Читаем первый блок
         if not buffer:  # Если файл пустой
