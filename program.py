@@ -57,7 +57,8 @@ try:
                 work_buffer = ''
             buffer = file.read(buffer_len)  # Читаем очередной блок
             if re.findall(r'[\d]', buffer) and symbol_flag:
-                print('xui')
+                print("\nВ файле слитно с числом пишутся буквенные символы."
+                      "\nИзмените существующий text.txt файл.")
                 break
             else:
                 symbol_flag = False
