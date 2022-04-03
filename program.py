@@ -60,15 +60,27 @@ try:
                           "\nИзмените существующий text.txt файл.")
                     break
                 hope_flag = True
+            if buffer == "-":
+                if not "-" in work_buffer:
+                    work_buffer += buffer
+                else:
+                    print("\nВ файле найдена ошибка с пунктуацией при нахождении дроби."
+                          "\nИзмените существующий text.txt файл.")
+                    break
+                tire_flag = True
             if re.findall(r'[а-яё]|[А-ЯЁ]|[a-z]|[A-Z]', buffer) and digit_flag:  # Если буквенные символы между цифрами
                 print("\nВ файле числа должны быть представлены в десятичной системе счисления."
                       "\nМежду цифрами или после чисел пишутся слитно буквенные символы."
                       " Измените существующий text.txt файл.")
                 break
-            if re.findall(r'[^а-яёА-ЯЁa-zA-Z0-9.]', buffer):    # Если символ - окончание числа
+            if re.findall(r'[^а-яёА-ЯЁa-zA-Z0-9.-]', buffer):    # Если символ - окончание числа
                 if hope_flag:       # Если в буфере сформировалась дробь
                     digit_flag = False
-                if digit_flag:     # Если в буфере сформировалось целое число
+                if work_buffer[0] == "-" and len(work_buffer) % 2 == 0 and re.findall(r'[-]*[0-9]', work_buffer)\
+                        and digit_flag:
+                    s = work_buffer
+                    print(s, '=', toBASEint(int(work_buffer), k))
+                if digit_flag:  # Если в буфере сформировалось целое число
                     if len(work_buffer) % 2 != 0:
                         for i in range(0, len(work_buffer)):  # Цикл перевода числа в К-ичную систему счисления
                             n = int(work_buffer)
@@ -79,28 +91,48 @@ try:
                                 s = h[n % k] + s
                                 n = n // k
                         print(int(work_buffer), '=', s)  # Печатаем предложение и готовим новый цикл
-                        if stop_flag:  # Остановка программы, если дошли до конца файла
-                            break
+                    if stop_flag:  # Остановка программы, если дошли до конца файла
+                        break
                 if hope_flag:       # Если в буфере сформировалась дробь
-                    if ("." in work_buffer) and (len(work_buffer) % 2 == 0):
+                    if float(work_buffer) > 0:     # Если дробь положительная
+                        if work_buffer[0] == '.':
+                            work_buffer = '0' + work_buffer    # Добавление нуля
+                        if len(work_buffer) % 2 == 0:
+                            num, frac = map(str, work_buffer.split('.'))    # Цикл перевода числа в другую сс
+                            num = int(num, 10)
+                            a = toBASEint(num, k)
+                            b = 0
+                            f = 10
+                            for i in frac:
+                                b += h.index(i) / f
+                                f *= 10
+                            b = str(toBaseFrac(b, k)).rstrip('0')
+                            if b == "":
+                                print(work_buffer, "=", a)
+                            else:
+                                print(work_buffer, "=", a + '.' + b)
+                    if float(work_buffer) < 0:     # Если дробь отрицательная
+                        work_buffer = work_buffer[1:]    # Удаление минуса
                         if work_buffer[0] == ".":
-                            work_buffer = "0" + work_buffer
-                        num, frac = map(str, work_buffer.split('.'))
+                            work_buffer = "0" + work_buffer    # Добавление нуля
+                        num, frac = map(str, work_buffer.split('.'))    # Цикл перевода числа в другую сс
                         num = int(num, 10)
                         a = toBASEint(num, k)
+                        a = '-' + a
                         b = 0
                         f = 10
                         for i in frac:
                             b += h.index(i) / f
                             f *= 10
                         b = str(toBaseFrac(b, k)).rstrip('0')
+                        work_buffer = '-' + work_buffer
                         if b == "":
                             print(work_buffer, "=", a)
                         else:
-                            print(work_buffer,"=",a + '.' + b)
-                        hope_flag = False
-                        if stop_flag:  # Остановка программы, если дошли до конца файла
-                            break
+                            print(work_buffer, "=", a + '.' + b)
+                    if stop_flag:  # Остановка программы, если дошли до конца файла
+                        break
+                hope_flag = False
                 digit_flag = False
                 work_buffer = ''
             buffer = file.read(buffer_len)  # Читаем очередной блок
