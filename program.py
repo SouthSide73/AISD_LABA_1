@@ -55,6 +55,10 @@ try:
             if buffer == ".":            # Если находится точка
                 if not "." in work_buffer:
                     work_buffer += buffer
+                else:
+                    print("\nВ файле найдена ошибка с пунктуацией при нахождении дроби."
+                          "\nИзмените существующий text.txt файл.")
+                    break
                 hope_flag = True
             if re.findall(r'[а-яё]|[А-ЯЁ]|[a-z]|[A-Z]', buffer) and digit_flag:  # Если буквенные символы между цифрами
                 print("\nВ файле числа должны быть представлены в десятичной системе счисления."
@@ -79,6 +83,8 @@ try:
                             break
                 if hope_flag:       # Если в буфере сформировалась дробь
                     if ("." in work_buffer) and (len(work_buffer) % 2 == 0):
+                        if work_buffer[0] == ".":
+                            work_buffer = "0" + work_buffer
                         num, frac = map(str, work_buffer.split('.'))
                         num = int(num, 10)
                         a = toBASEint(num, k)
