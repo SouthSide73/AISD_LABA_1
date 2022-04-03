@@ -11,6 +11,24 @@ work_buffer = ""                # Рабочий буфер
 digit_flag = False              # Флаг наличия цифры
 stop_flag = False               # Флаг пустого буфера
 symbol_flag = False             # Флаг слитного написания буквенных символов с числом
+hope_flag = False               # Флаг дробных чисел
+h = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'      # Алфавит
+def toBASEint(num, base):                       # Функция для перевода сс дробей (1)
+    n = abs(num)
+    b = h[n % base]
+    while n >= base:
+        n = n // base
+        b += h[n % base]
+    return ('' if num >= 0 else '-') + b[::-1]
+def toBaseFrac(frac, base, n=10):              # Функция для перевода сс дробей (2)
+    b = ''
+    while n:
+        frac *= base
+        frac = round(frac, n)
+        b += (h[int(frac)])
+        frac -= int(frac)
+        n -= 1
+    return b
 try:
     print("----- Локальное время", time.ctime(), "-----")
     while 1:
@@ -34,23 +52,47 @@ try:
             if (buffer >= '0') and (buffer <= '9'):  # Обрабатываем текущий блок
                 work_buffer += buffer
                 digit_flag = True
+            if buffer == ".":            # Если находится точка
+                if not "." in work_buffer:
+                    work_buffer += buffer
+                hope_flag = True
             if re.findall(r'[а-яё]|[А-ЯЁ]|[a-z]|[A-Z]', buffer) and digit_flag:  # Если буквенные символы между цифрами
                 print("\nВ файле числа должны быть представлены в десятичной системе счисления."
-                      "\nМежду цифрами или после чисел пишутся слитно буквенные символы. Измените существующий text.txt файл.")
+                      "\nМежду цифрами или после чисел пишутся слитно буквенные символы."
+                      " Измените существующий text.txt файл.")
                 break
-            if re.findall(r'[\W]|[_]', buffer):    # Если символ - окончание числа
-                if digit_flag:  # Если в буфере сформировалось число
+            if re.findall(r'[^а-яёА-ЯЁa-zA-Z0-9.]', buffer):    # Если символ - окончание числа
+                if hope_flag:       # Если в буфере сформировалась дробь
+                    digit_flag = False
+                if digit_flag:     # Если в буфере сформировалось целое число
                     if len(work_buffer) % 2 != 0:
                         for i in range(0, len(work_buffer)):  # Цикл перевода числа в К-ичную систему счисления
                             n = int(work_buffer)
                             s = ''
-                            h = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
                             if n == 0:
                                 s = '0'
                             while n > 0:
                                 s = h[n % k] + s
                                 n = n // k
                         print(int(work_buffer), '=', s)  # Печатаем предложение и готовим новый цикл
+                        if stop_flag:  # Остановка программы, если дошли до конца файла
+                            break
+                if hope_flag:       # Если в буфере сформировалась дробь
+                    if ("." in work_buffer) and (len(work_buffer) % 2 == 0):
+                        num, frac = map(str, work_buffer.split('.'))
+                        num = int(num, 10)
+                        a = toBASEint(num, k)
+                        b = 0
+                        f = 10
+                        for i in frac:
+                            b += h.index(i) / f
+                            f *= 10
+                        b = str(toBaseFrac(b, k)).rstrip('0')
+                        if b == "":
+                            print(work_buffer, "=", a)
+                        else:
+                            print(work_buffer,"=",a + '.' + b)
+                        hope_flag = False
                         if stop_flag:  # Остановка программы, если дошли до конца файла
                             break
                 digit_flag = False
@@ -62,7 +104,7 @@ try:
                 break
             else:
                 symbol_flag = False
-            if (not buffer) and (len(work_buffer) % 2 != 0):   # Если дошли до конца файла
+            if not buffer:   # Если дошли до конца файла
                 buffer = " "
                 stop_flag = True
         finish = time.time()
