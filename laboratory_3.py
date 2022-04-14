@@ -29,6 +29,9 @@ try:
             print("\nФайл text.txt в директории проекта пустой."
                   "\nДобавьте не пустой файл в директорию или переименуйте существующий *.txt файл.")
         while buffer:  # Пока файл не пустой
+            if not buffer:         # Если дошли до конца файла
+                buffer = " "
+                stop_flag = True
             if (buffer >= '0') and (buffer <= '9'):  # Обрабатываем текущий блок
                 work_buffer += buffer
                 digit_flag = True
@@ -52,9 +55,6 @@ try:
                 digit_flag = False
                 work_buffer = ''
             buffer = file.read(buffer_len)  # Читаем очередной блок
-            if not buffer:         # Если дошли до конца файла
-                buffer = " "
-                stop_flag = True
         finish = time.time()
         result = finish - start
         print("Program time: " + str(result) + " seconds.")
